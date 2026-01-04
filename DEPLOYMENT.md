@@ -12,9 +12,7 @@
 4. Render will automatically detect `render.yaml` and create:
    - Backend service (vibecheck-backend)
    - Frontend service (vibecheck-frontend)
-5. Add environment variables in Render dashboard:
-   - For backend: `GEMINI_API_KEY` (your Google AI API key)
-6. Deploy!
+5. Deploy! (No API key needed - users provide their own through the UI)
 
 **Manual Deployment (Alternative):**
 
@@ -22,7 +20,7 @@ Backend:
 1. New Web Service → Docker
 2. Set Dockerfile path: `./backend/Dockerfile`
 3. Set Docker context: `./backend`
-4. Add environment variable: `GEMINI_API_KEY`
+4. No API key needed (users provide their own)
 
 Frontend:
 1. New Web Service → Docker  
@@ -64,18 +62,23 @@ npm run dev
 
 ## 🔧 Environment Variables
 
-### Backend (.env)
+### Backend (.env) - Optional for Local Development
 ```env
-GEMINI_API_KEY=your_google_ai_api_key_here
 HOST=0.0.0.0
 PORT=8000
 DEBUG=false
+# GEMINI_API_KEY=optional_fallback_key (not needed - users enter their own)
 ```
 
-### Get Your Gemini API Key
+### User API Keys
+- Users enter their own Gemini API key through the frontend UI
+- Keys are stored in browser localStorage (not sent to server for storage)
+- Each API request includes the user's key
+
+### Get Your Gemini API Key (For Users)
 1. Visit: https://aistudio.google.com/apikey
 2. Create a new API key
-3. Add it to your .env file or Render environment variables
+3. Enter it in the VibeCheck app when prompted
 
 ## 📝 Important Notes
 
@@ -88,8 +91,8 @@ DEBUG=false
 - Backend: `GET /health` → Returns `{"status": "healthy"}`
 - Frontend: Access root URL → Should load the React app
 
-## 🐛 Troubleshooting
-
+## 🐛 Troubleshooting"No API key provided" error
+- **Solution**: Make sure you entered your Gemini API key in the frontend modal. The key is required for each request.
 **Issue**: "docker-compose.yml parse error"
 - **Solution**: You're trying to use docker-compose.yml as a Dockerfile. Use render.yaml for Render deployment or individual Dockerfiles.
 

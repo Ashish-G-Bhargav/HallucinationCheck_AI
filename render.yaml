@@ -13,8 +13,6 @@ services:
         value: 8000
       - key: DEBUG
         value: false
-      - key: GEMINI_API_KEY
-        sync: false
 
   # Frontend Service
   - type: web
