@@ -1,5 +1,4 @@
 # VibeCheck Docker Compose Configuration
-version: '3.8'
 
 services:
   # Backend API Service

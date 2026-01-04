@@ -1,0 +1,28 @@
+services:
+  # Backend API Service
+  - type: web
+    name: vibecheck-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    envVars:
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        value: 8000
+      - key: DEBUG
+        value: false
+    healthCheckPath: /health
+
+  # Frontend Service
+  - type: web
+    name: vibecheck-frontend
+    runtime: docker
+    dockerfilePath: ./frontend-react/Dockerfile
+    dockerContext: ./frontend-react
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: vibecheck-backend
+          property: host
