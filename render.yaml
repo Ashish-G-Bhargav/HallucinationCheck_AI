@@ -2,9 +2,10 @@ services:
   # Backend API Service
   - type: web
     name: vibecheck-backend
-    runtime: docker
+    env: docker
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
+    healthCheckPath: /health
     envVars:
       - key: HOST
         value: 0.0.0.0
@@ -12,17 +13,12 @@ services:
         value: 8000
       - key: DEBUG
         value: false
-    healthCheckPath: /health
+      - key: GEMINI_API_KEY
+        sync: false
 
   # Frontend Service
   - type: web
     name: vibecheck-frontend
-    runtime: docker
+    env: docker
     dockerfilePath: ./frontend-react/Dockerfile
     dockerContext: ./frontend-react
-    envVars:
-      - key: VITE_API_URL
-        fromService:
-          type: web
-          name: vibecheck-backend
-          property: host
