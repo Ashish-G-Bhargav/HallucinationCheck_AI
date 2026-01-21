@@ -57,9 +57,9 @@ function ClaimCard({ claim, index }) {
         {claim.source_url && (
           <div className="detail-row">
             <span className="detail-label">Source</span>
-            <a 
-              href={claim.source_url} 
-              target="_blank" 
+            <a
+              href={claim.source_url}
+              target="_blank"
               rel="noopener noreferrer"
               className="source-link"
             >
@@ -69,15 +69,29 @@ function ClaimCard({ claim, index }) {
         )}
 
         <div className="confidence-section">
-          <div className="confidence-header">
-            <span className="confidence-label">Confidence</span>
-            <span className="confidence-percentage">{claim.confidence_score}%</span>
+          <div className="confidence-info">
+            <span className="label">Confidence</span>
+            <span className="value">{claim.confidence_score}%</span>
           </div>
-          <div className="confidence-bar-track">
-            <div 
-              className={`confidence-bar-fill ${claim.status.toLowerCase()}`}
-              style={{ width: `${claim.confidence_score}%` }}
-            />
+          <div className="confidence-ring-container">
+            <svg className="confidence-ring" viewBox="0 0 36 36">
+              <circle
+                className="confidence-ring-bg"
+                cx="18"
+                cy="18"
+                r="14"
+                fill="none"
+              />
+              <circle
+                className={`confidence-ring-fill ${claim.status.toLowerCase()}`}
+                cx="18"
+                cy="18"
+                r="14"
+                fill="none"
+                strokeDasharray={`${claim.confidence_score * 0.88} 100`}
+                strokeLinecap="round"
+              />
+            </svg>
           </div>
         </div>
       </div>

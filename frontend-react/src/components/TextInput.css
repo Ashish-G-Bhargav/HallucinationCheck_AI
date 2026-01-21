@@ -1,45 +1,26 @@
 .text-input-container {
-  background: var(--bg-tertiary);
-  border-radius: 16px;
-  padding: 1.25rem 1.5rem;
-  border: 1px solid var(--border);
-  transition: all 0.3s ease;
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.text-input-container:hover {
-  border-color: var(--border);
-  background: var(--bg-tertiary);
-}
-
-.text-input-container:focus-within {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent);
-}
-
-.input-label {
-  display: none;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--blur-amount));
+  -webkit-backdrop-filter: blur(var(--blur-amount));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  box-shadow: var(--shadow-md);
+  animation: slideUp 0.5s ease-out;
 }
 
 .text-input {
   width: 100%;
+  min-height: 80px;
+  max-height: 300px;
+  padding: 1rem 1.25rem;
   background: transparent;
-  color: var(--text-primary);
   border: none;
-  padding: 0;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 1rem;
-  font-weight: 400;
+  font-size: 0.95rem;
   line-height: 1.7;
+  color: var(--text-primary);
   resize: none;
-  min-height: 100px;
-  max-height: 400px;
-  overflow-y: auto;
+  font-family: var(--font-body);
 }
 
 .text-input::placeholder {
@@ -50,35 +31,41 @@
   outline: none;
 }
 
-.text-input:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
+/* Actions bar at bottom */
 .input-actions {
   display: flex;
-  flex-direction: row;
-  gap: 0.75rem;
-  align-items: center;
   justify-content: flex-end;
+  align-items: center;
+  gap: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
 }
 
+/* Clear button */
 .clear-btn {
   background: transparent;
-  border: none;
-  color: var(--text-muted);
-  padding: 0.5rem;
+  border: 1px solid var(--border);
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
+  color: var(--text-muted);
+  transition: all 0.2s ease;
+}
+
+.clear-btn svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
 }
 
 .clear-btn:hover:not(:disabled) {
-  color: var(--text-primary);
-  background: var(--border);
+  background: var(--error-bg);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .clear-btn:disabled {
@@ -86,49 +73,53 @@
   cursor: not-allowed;
 }
 
-.clear-btn svg {
-  width: 18px;
-  height: 18px;
-}
-
+/* Audit/Send button */
 .audit-btn {
-  background: var(--text-primary);
-  color: var(--bg-primary);
+  background: var(--accent-gradient);
+  color: white;
   border: none;
-  padding: 0.6rem;
-  border-radius: 50%;
+  width: 52px;
+  height: 44px;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-}
-
-.audit-btn:hover:not(:disabled) {
-  background: var(--accent);
-  color: white;
-  transform: scale(1.05);
-}
-
-.audit-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+  box-shadow: var(--shadow-accent);
+  transition: all 0.2s ease;
 }
 
 .audit-btn svg {
   width: 20px;
   height: 20px;
+  stroke: white;
+  fill: none;
 }
 
-.audit-btn .loading-spinner {
+.audit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(230, 46, 46, 0.5);
+}
+
+.audit-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.audit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Loading spinner */
+.loading-spinner {
   width: 20px;
   height: 20px;
-  border: 2px solid transparent;
-  border-top-color: currentColor;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
   border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+  animation: spin 0.7s linear infinite;
 }
 
 @keyframes spin {
@@ -137,18 +128,21 @@
   }
 }
 
+/* Responsive */
 @media (max-width: 768px) {
   .text-input-container {
-    padding: 0.4rem 0.6rem 0.4rem 0.75rem;
-    border-radius: 24px;
+    padding: 0.875rem;
   }
-  
+
   .text-input {
-    font-size: 0.95rem;
+    min-height: 60px;
+    padding: 0.875rem 1rem;
+    font-size: 0.9rem;
   }
-  
-  .audit-btn {
-    width: 36px;
-    height: 36px;
+
+  .audit-btn,
+  .clear-btn {
+    width: 40px;
+    height: 40px;
   }
 }

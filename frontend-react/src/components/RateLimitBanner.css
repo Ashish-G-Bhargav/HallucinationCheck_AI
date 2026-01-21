@@ -1,0 +1,80 @@
+.rate-limit-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1.25rem;
+    background: var(--warning-bg);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: var(--radius-md);
+    margin-bottom: 1.5rem;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.rate-limit-banner svg {
+    width: 18px;
+    height: 18px;
+    stroke: var(--warning);
+    flex-shrink: 0;
+}
+
+.rate-limit-banner span {
+    flex: 1;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--warning);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.rate-limit-banner.critical {
+    background: var(--error-bg);
+    border-color: rgba(230, 46, 46, 0.3);
+}
+
+.rate-limit-banner.critical svg,
+.rate-limit-banner.critical span {
+    color: var(--accent-bright);
+    stroke: var(--accent-bright);
+}
+
+.rate-limit-banner.offline {
+    background: var(--glass-bg-subtle);
+    border-color: var(--border);
+}
+
+.rate-limit-banner.offline svg,
+.rate-limit-banner.offline span {
+    color: var(--text-muted);
+    stroke: var(--text-muted);
+}
+
+.rate-bar {
+    width: 60px;
+    height: 4px;
+    background: var(--bg-secondary);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.rate-bar-fill {
+    height: 100%;
+    background: var(--warning);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+.rate-limit-banner.critical .rate-bar-fill {
+    background: var(--accent);
+}

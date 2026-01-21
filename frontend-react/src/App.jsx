@@ -6,6 +6,11 @@ import TextInput from './components/TextInput';
 import Header from './components/Header';
 import Stats from './components/Stats';
 import CorrectedTextModal from './components/CorrectedTextModal';
+import SkeletonLoader from './components/SkeletonLoader';
+import HistoryPanel from './components/HistoryPanel';
+import RateLimitBanner from './components/RateLimitBanner';
+import { exportAsMarkdown } from './utils/exportUtils';
+import BackgroundEffects from './components/BackgroundEffects';
 
 const SAMPLE_TEXT = `Recent studies by Johnson et al. (2024) in the Journal of Advanced AI suggest that neural networks consume 50% less energy when trained on quantum hardware. This breakthrough, known as the 'Quantum Leap Protocol', was validated by Google DeepMind in their 2023 annual report. Meanwhile, the moon is made of green cheese, a fact confirmed by NASA in 1969. The Transformer architecture was introduced by Vaswani et al. in their 2017 paper "Attention Is All You Need".`;
 
@@ -17,12 +22,67 @@ function App() {
   const [showCorrectedModal, setShowCorrectedModal] = useState(false);
   const [correctedText, setCorrectedText] = useState('');
   const [apiKey, setApiKey] = useState('');
+  const [history, setHistory] = useState([]);
+  const [showHistory, setShowHistory] = useState(false);
+  const [requestCount, setRequestCount] = useState(0);
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
+
+  // Online/offline detection
+  useEffect(() => {
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   useEffect(() => {
-    // Load saved API key on mount
+    // Load saved API key and history on mount
     const savedApiKey = localStorage.getItem('vibecheck-api-key') || '';
     setApiKey(savedApiKey);
+
+    const savedHistory = localStorage.getItem('vibecheck-history');
+    if (savedHistory) {
+      try {
+        setHistory(JSON.parse(savedHistory));
+      } catch (e) {
+        console.error('Failed to parse history:', e);
+      }
+    }
   }, []);
+
+  const saveToHistory = (analysisText, analysisReport, analysisStats) => {
+    const newEntry = {
+      id: Date.now(),
+      timestamp: Date.now(),
+      text: analysisText,
+      report: analysisReport,
+      stats: analysisStats
+    };
+    const updatedHistory = [newEntry, ...history].slice(0, 20); // Keep last 20
+    setHistory(updatedHistory);
+    localStorage.setItem('vibecheck-history', JSON.stringify(updatedHistory));
+  };
+
+  const handleHistoryRestore = (item) => {
+    setText(item.text);
+    setReport(item.report);
+    setShowHistory(false);
+  };
+
+  const handleHistoryDelete = (id) => {
+    const updatedHistory = history.filter(item => item.id !== id);
+    setHistory(updatedHistory);
+    localStorage.setItem('vibecheck-history', JSON.stringify(updatedHistory));
+  };
+
+  const handleHistoryClear = () => {
+    setHistory([]);
+    localStorage.removeItem('vibecheck-history');
+  };
 
   const handleApiKeyChange = (newApiKey) => {
     setApiKey(newApiKey);
@@ -46,6 +106,16 @@ function App() {
     try {
       const result = await verifyText(text, apiKey);
       setReport(result);
+      setRequestCount(prev => prev + 1);
+
+      // Calculate stats and save to history
+      const analysisStats = {
+        verified: result.claims?.filter(c => c.status === 'VERIFIED').length || 0,
+        hallucinations: result.claims?.filter(c => c.status === 'HALLUCINATION').length || 0,
+        suspicious: result.claims?.filter(c => c.status === 'SUSPICIOUS').length || 0,
+        total: result.claims?.length || 0
+      };
+      saveToHistory(text, result, analysisStats);
     } catch (err) {
       setError(err.response?.data?.detail || 'Failed to connect to VibeCheck API. Make sure the backend is running.');
     } finally {
@@ -74,7 +144,7 @@ function App() {
 
   const getStats = () => {
     if (!report?.claims) return { verified: 0, hallucinations: 0, suspicious: 0, total: 0 };
-    
+
     const stats = {
       verified: 0,
       hallucinations: 0,
@@ -95,19 +165,19 @@ function App() {
 
   return (
     <div className="app">
-      <div className="decorative-dots">
-        <div className="dot"></div>
-        <div className="dot"></div>
-        <div className="dot"></div>
-        <div className="dot"></div>
-        <div className="dot"></div>
-        <div className="dot"></div>
-      </div>
-      <Header onApiKeyChange={handleApiKeyChange} apiKey={apiKey} />
-      
+      <BackgroundEffects />
+      <Header
+        onApiKeyChange={handleApiKeyChange}
+        apiKey={apiKey}
+        onHistoryToggle={() => setShowHistory(!showHistory)}
+        historyCount={history.length}
+      />
+
       <main className="container">
+        <RateLimitBanner requestCount={requestCount} isOffline={isOffline} />
+
         <div className="input-section">
-          <TextInput 
+          <TextInput
             value={text}
             onChange={setText}
             onAudit={handleAudit}
@@ -124,15 +194,25 @@ function App() {
         {report && (
           <>
             <Stats stats={stats} />
-            
+
             <div className="results-section">
               <div className="results-header">
                 <h2>Analysis Results</h2>
-                {stats.hallucinations > 0 && (
-                  <button className="auto-fix-btn" onClick={handleAutoFix}>
-                    Auto-Fix All
+                <div className="results-actions">
+                  <button className="export-btn" onClick={() => exportAsMarkdown(text, report, stats)}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="7 10 12 15 17 10" />
+                      <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    Export
                   </button>
-                )}
+                  {stats.hallucinations > 0 && (
+                    <button className="auto-fix-btn" onClick={handleAutoFix}>
+                      Auto-Fix All
+                    </button>
+                  )}
+                </div>
               </div>
 
               <div className="claims-list">
@@ -146,8 +226,8 @@ function App() {
 
         {loading && (
           <div className="loading-container">
-            <div className="spinner"></div>
-            <p>Analyzing text for hallucinations...</p>
+            <p className="loading-text">Analyzing text for hallucinations...</p>
+            <SkeletonLoader />
           </div>
         )}
 
@@ -160,6 +240,15 @@ function App() {
           />
         )}
       </main>
+
+      <HistoryPanel
+        history={history}
+        onRestore={handleHistoryRestore}
+        onDelete={handleHistoryDelete}
+        onClear={handleHistoryClear}
+        isOpen={showHistory}
+        onClose={() => setShowHistory(false)}
+      />
 
       <footer className="footer">
         <p>Powered by Gemini 2.0 Flash — Built with React & FastAPI</p>

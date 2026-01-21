@@ -1,0 +1,127 @@
+.background-effects {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+/* Floating particles */
+.particles {
+    position: absolute;
+    inset: 0;
+}
+
+.particle {
+    position: absolute;
+    width: var(--size, 6px);
+    height: var(--size, 6px);
+    background: var(--accent);
+    border-radius: 50%;
+    opacity: 0.3;
+    left: var(--x-start, 50%);
+    bottom: -20px;
+    animation: floatUp var(--duration, 15s) linear infinite;
+    animation-delay: var(--delay, 0s);
+    filter: blur(1px);
+    box-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent);
+}
+
+@keyframes floatUp {
+    0% {
+        transform: translateY(0) translateX(0);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 0.4;
+    }
+
+    90% {
+        opacity: 0.3;
+    }
+
+    100% {
+        transform: translateY(-110vh) translateX(calc(var(--x-end) - var(--x-start)));
+        opacity: 0;
+    }
+}
+
+/* Corner glows */
+.corner-glow {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.15;
+    animation: cornerPulse 8s ease-in-out infinite;
+}
+
+.corner-glow.top-left {
+    top: -200px;
+    left: -200px;
+    background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+    animation-delay: 0s;
+}
+
+.corner-glow.bottom-right {
+    bottom: -200px;
+    right: -200px;
+    background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+    animation-delay: 4s;
+}
+
+@keyframes cornerPulse {
+
+    0%,
+    100% {
+        opacity: 0.1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.2;
+        transform: scale(1.1);
+    }
+}
+
+/* Animated scan line effect */
+.scan-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg,
+            transparent 0%,
+            rgba(230, 46, 46, 0.3) 20%,
+            rgba(230, 46, 46, 0.6) 50%,
+            rgba(230, 46, 46, 0.3) 80%,
+            transparent 100%);
+    animation: scanDown 8s linear infinite;
+    opacity: 0.5;
+}
+
+@keyframes scanDown {
+    0% {
+        top: -2px;
+        opacity: 0;
+    }
+
+    5% {
+        opacity: 0.5;
+    }
+
+    95% {
+        opacity: 0.5;
+    }
+
+    100% {
+        top: 100%;
+        opacity: 0;
+    }
+}

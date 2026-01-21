@@ -9,7 +9,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
-from agent import verify_content, verify_paper, ClaimAnalysis, VerificationReport
+from .agent import verify_content, verify_paper, ClaimAnalysis, VerificationReport
 
 # --- FastAPI App Setup ---
 app = FastAPI(
